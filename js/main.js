@@ -5,9 +5,10 @@ const clases = ["Tango", "Milonga", "Vals"];
 function mostrarClases() {
     console.log("Ejecutando mostrarClases...");
     let mensaje = "Clases disponibles:\n";
-const totalClases = 3; 
-    for (let i = 0; i < totalClases; i++) {
-        mensaje += (i + 1) + ". " + clases[i] + "\n";
+    let index = 1; // Índice manual para numerar las clases
+    for (const clase of clases) {
+        mensaje += `${index}. ${clase}\n`;
+        index++;
     }
     alert(mensaje);
     console.log("Clases mostradas: ", clases);
