@@ -1,11 +1,36 @@
 const clases = ["Tango", "Milonga", "Vals"];
 
-const output = document.getElementById("output");
-const formularioReserva = document.getElementById("formularioReserva");
-const claseSeleccionada = document.getElementById("claseSeleccionada");
+let output, formularioReserva, claseSeleccionada, contadorReservas = 0, reservas = [];
 
-let contadorReservas = 0;
-let reservas = [];
+document.addEventListener("DOMContentLoaded", () => {
+    output = document.getElementById("output");
+    formularioReserva = document.getElementById("formularioReserva");
+    claseSeleccionada = document.getElementById("claseSeleccionada");
+
+    document.getElementById("verClases").addEventListener("click", () => mostrarClases(clases));
+    document.getElementById("salir").addEventListener("click", () => {
+        output.innerHTML = "<p>Thank you for using the simulator.</p>";
+    });
+    document.getElementById("confirmarReserva").addEventListener("click", confirmarReserva);
+    document.getElementById("cancelarReserva").addEventListener("click", cancelarReserva);
+
+    document.getElementById("nombre").addEventListener("input", (event) => {
+        const input = event.target;
+        input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    });
+
+    document.getElementById("dia").addEventListener("input", (event) => {
+        const input = event.target;
+        input.value = input.value.replace(/[^0-9/]/g, "");
+    });
+
+    document.getElementById("telefono").addEventListener("input", (event) => {
+        const input = event.target;
+        input.value = input.value.replace(/[^0-9]/g, "");
+    });
+
+    agregarFooter();
+});
 
 function mostrarClases(listaClases) {
     output.innerHTML = "<h2>Available Classes</h2>";
@@ -78,21 +103,6 @@ function seleccionarClase(index) {
     mostrarHorariosReservados();
 }
 
-document.getElementById("nombre").addEventListener("input", (event) => {
-    const input = event.target;
-    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-});
-
-document.getElementById("dia").addEventListener("input", (event) => {
-    const input = event.target;
-    input.value = input.value.replace(/[^0-9/]/g, "");
-});
-
-document.getElementById("telefono").addEventListener("input", (event) => {
-    const input = event.target;
-    input.value = input.value.replace(/[^0-9]/g, ""); // Allow only numbers
-});
-
 function confirmarReserva() {
     const nombre = document.getElementById("nombre").value;
     const dia = document.getElementById("dia").value;
@@ -113,7 +123,7 @@ function confirmarReserva() {
 
     const [day, month, year] = dia.split("/").map(Number);
     const inputDate = new Date(year, month - 1, day);
-    const minDate = new Date(2025, 3, 29); // 29/04/2025
+    const minDate = new Date(2025, 3, 29);
 
     if (inputDate < minDate) {
         output.innerHTML = "<p style='color: red;'>The date must be on or after 29/04/2025.</p>";
@@ -181,16 +191,3 @@ function agregarFooter() {
     footer.style.color = "#ffd700";
     document.body.appendChild(footer);
 }
-
-function iniciarSimulador() {
-    document.getElementById("verClases").addEventListener("click", () => mostrarClases(clases));
-    document.getElementById("salir").addEventListener("click", () => {
-        output.innerHTML = "<p>Thank you for using the simulator.</p>";
-    });
-    document.getElementById("confirmarReserva").addEventListener("click", confirmarReserva);
-    document.getElementById("cancelarReserva").addEventListener("click", cancelarReserva);
-
-    agregarFooter(); // Add footer when the simulator starts
-}
-
-document.addEventListener("DOMContentLoaded", iniciarSimulador);

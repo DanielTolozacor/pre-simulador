@@ -90,11 +90,25 @@ button:hover {
 }
 
 /* Gratitude message */
-div[style*="background-color: #d4edda"] {
+#agradecimiento {
     background: linear-gradient(45deg, #ffd700, #ffcc00); /* Gold gradient */
     color: #000; /* Black text */
     border: 2px solid #ffd700;
     box-shadow: 0 0 15px #ffd700, 0 0 30px #ffcc00;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #000; /* Black base */
+    color: #ffd700; /* Gold text */
+    border-top: 2px solid #ffd700;
 }
 
 /* Menu buttons */
