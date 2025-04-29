@@ -120,14 +120,17 @@ const minDate = new Date(2025, 3, 29); // 29/04/2025
 
 console.log("Fecha mínima permitida:", minDate); // Verifica la fecha mínima
 console.log("Fecha ingresada convertida:", inputDate); // Verifica la fecha ingresada convertida
-console.log("¿Fecha válida?", inputDate >= minDate); // Verifica si la fecha es válida
+const reservaExistente = reservas.find(
+    (reserva) => reserva.dia === dia && reserva.hora === hora
+);
+console.log("Reservas existentes:", reservas); // Verifica todas las reservas actuales
+console.log("Intentando reservar:", { dia, hora }); // Verifica el día y la hora seleccionados
+console.log("¿Ya reservado?", reservaExistente); // Verifica si ya existe una reserva
 
-if (inputDate < minDate) {
-    output.innerHTML = "<p style='color: red;'>The date must be on or after 29/04/2025.</p>";
+if (reservaExistente) {
+    output.innerHTML = `<p style='color: red;'>The time ${hora} is already reserved for the class ${reservaExistente.clase}. Please choose another time.</p>`;
     return;
-}
-
-    const reservaExistente = reservas.find(
+}    const reservaExistente = reservas.find(
         (reserva) => reserva.dia === dia && reserva.hora === hora
     );
     if (reservaExistente) {
