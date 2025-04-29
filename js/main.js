@@ -93,13 +93,6 @@ document.getElementById("nombre").addEventListener("input", (event) => {
 document.getElementById("dia").addEventListener("input", (event) => {
     const input = event.target;
     input.value = input.value.replace(/[^0-9/]/g, "");
-});
-
-document.getElementById("telefono").addEventListener("input", (event) => {
-    const input = event.target;
-    input.value = input.value.replace(/[^0-9]/g, ""); // Allow only numbers
-});
-
 function confirmarReserva() {
     const nombre = document.getElementById("nombre").value;
     const dia = document.getElementById("dia").value;
@@ -107,37 +100,29 @@ function confirmarReserva() {
     const telefono = document.getElementById("telefono").value;
     const claseIndex = formularioReserva.dataset.claseIndex;
 
+    console.log("Datos de confirmación de reserva:", { nombre, dia, hora, telefono, clase: clases[claseIndex] });
+
     if (!telefono || telefono.length < 10) {
         output.innerHTML = "<p style='color: red;'>Please enter a valid phone number with at least 10 digits.</p>";
         return;
     }
 
     const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-console.log("Fecha ingresada:", dia); // Verifica qué fecha se ingresó
-console.log("¿Formato válido?", fechaRegex.test(dia)); // Verifica si cumple con el formato
+    if (!fechaRegex.test(dia)) {
+        output.innerHTML = "<p style='color: red;'>Please enter a valid date in the format dd/mm/yyyy.</p>";
+        return;
+    }
 
-if (!fechaRegex.test(dia)) {
-    output.innerHTML = "<p style='color: red;'>Please enter a valid date in the format dd/mm/yyyy.</p>";
-    return;
-}
+    const [day, month, year] = dia.split("/").map(Number);
+    const inputDate = new Date(year, month - 1, day);
+    const minDate = new Date(2025, 3, 29); // 29/04/2025
 
-const [day, month, year] = dia.split("/").map(Number);
-const inputDate = new Date(year, month - 1, day);
-const minDate = new Date(2025, 3, 29); // 29/04/2025
+    if (inputDate < minDate) {
+        output.innerHTML = "<p style='color: red;'>The date must be on or after 29/04/2025.</p>";
+        return;
+    }
 
-console.log("Fecha mínima permitida:", minDate); // Verifica la fecha mínima
-console.log("Fecha ingresada convertida:", inputDate); // Verifica la fecha ingresada convertida
-const reservaExistente = reservas.find(
-    (reserva) => reserva.dia === dia && reserva.hora === hora
-);
-console.log("Reservas existentes:", reservas); // Verifica todas las reservas actuales
-console.log("Intentando reservar:", { dia, hora }); // Verifica el día y la hora seleccionados
-console.log("¿Ya reservado?", reservaExistente); // Verifica si ya existe una reserva
-
-if (reservaExistente) {
-    output.innerHTML = `<p style='color: red;'>The time ${hora} is already reserved for the class ${reservaExistente.clase}. Please choose another time.</p>`;
-    return;
-}    const reservaExistente = reservas.find(
+    const reservaExistente = reservas.find(
         (reserva) => reserva.dia === dia && reserva.hora === hora
     );
     if (reservaExistente) {
@@ -146,24 +131,14 @@ if (reservaExistente) {
     }
 
     if (nombre && dia && hora && telefono) {
+        console.log("Reserva confirmada, añadiendo a la lista de reservas.");
         contadorReservas++;
         reservas.push({ clase: clases[claseIndex], dia, hora, telefono });
-        const detalles = [
-            `<strong>Reservation Number: ${contadorReservas}</strong>`,
-            `Class: ${clases[claseIndex]}`,
-            `Name: ${nombre}`,
-            `Day: ${dia}`,
-            `Time: ${hora}`,
-            `Phone: ${telefono}`,
-            "Message: Your reservation has been successfully received. We will confirm shortly.",
-            "ETA: 15 minutes before the class starts."
-        ].map((detalle) => `<p>${detalle}</p>`).join("");
-        output.innerHTML = `
-            <h2>Reservation Received</h2>
-            ${detalles}
-        `;
-        formularioReserva.style.display = "none";
-        let agradecimiento = document.getElementById("agradecimiento");
+        mostrarHorariosReservados();
+    } else {
+        output.innerHTML = "<p style='color: red;'>Please complete all fields.</p>";
+    }
+}
         if (!agradecimiento) {
             agradecimiento = document.createElement("div");
             agradecimiento.id = "agradecimiento";
