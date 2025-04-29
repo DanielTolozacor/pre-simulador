@@ -20,17 +20,24 @@ function mostrarClases(listaClases) {
 
 function mostrarHorariosDisponibles(dia, claseIndex) {
     const horarios = [];
+    console.log("Día seleccionado:", dia); // Verifica el día recibido
+    console.log("Clase seleccionada:", clases[claseIndex]); // Verifica la clase seleccionada
+
     for (let hora = 9; hora <= 21; hora++) {
         const horaTexto = `${hora.toString().padStart(2, "0")}:00`;
         const reservaExistente = reservas.find(
             (reserva) => reserva.dia === dia && reserva.hora === horaTexto && reserva.clase === clases[claseIndex]
         );
+
         if (!reservaExistente) {
             horarios.push(horaTexto);
         }
     }
+
+    console.log("Horarios disponibles para el día y clase:", horarios); // Verifica los horarios generados
     return horarios;
 }
+
 
 function mostrarHorariosReservados() {
     const horariosReservadosDiv = document.getElementById("horariosReservados");
