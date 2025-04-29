@@ -4,9 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presimulador</title>
-    <script defer src="./js/main.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./js/main.js" defer></script>
 </head>
 <body>
-    <h1>Pre-Simulador Toloza Daniel</h1>
+    <h1>Bienvenido al Presimulador de Clases</h1>
+    <div id="menu">
+        <button id="verClases" class="menu-btn">Ver Clases Disponibles</button>
+        <button id="reservarClase" class="menu-btn">Realizar una Reserva</button>
+        <button id="salir" class="menu-btn">Salir</button>
+    </div>
+    <div id="output"></div>
+    <div id="formularioReserva" style="display: none;">
+        <h2>Reservar Clase</h2>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" />
+        <label for="dia">Día (dd/mm/yyyy):</label>
+        <input type="text" id="dia" />
+        <label for="hora">Hora (hh:mm):</label>
+        <input type="text" id="hora" />
+        <button id="confirmarReserva">Confirmar Reserva</button>
+    </div>
 </body>
 </html>
