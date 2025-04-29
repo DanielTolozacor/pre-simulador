@@ -1,15 +1,14 @@
-// Lista de clases
 const clases = ["Tango", "Milonga", "Vals"];
+
 const output = document.getElementById("output");
 const formularioReserva = document.getElementById("formularioReserva");
 const claseSeleccionada = document.getElementById("claseSeleccionada");
 
-let contadorReservas = 0; // Contador de reservas confirmadas
+let contadorReservas = 0;
+let reservas = [];
 
-// Muestra clases disponibles
 function mostrarClases(listaClases) {
-    console.log("Ejecutando mostrarClases...");
-    output.innerHTML = "<h2>Clases Disponibles</h2>";
+    output.innerHTML = "<h2>Available Classes</h2>";
     listaClases.forEach((clase, index) => {
         const claseItem = document.createElement("button");
         claseItem.textContent = `${index + 1}. ${clase}`;
@@ -17,73 +16,144 @@ function mostrarClases(listaClases) {
         claseItem.addEventListener("click", () => seleccionarClase(index));
         output.appendChild(claseItem);
     });
-    console.log("Clases mostradas: ", listaClases);
 }
 
-// Seleccionar clase para reservar
+function mostrarHorariosDisponibles(dia, claseIndex) {
+    const horarios = [];
+    for (let hora = 9; hora <= 21; hora++) {
+        const horaTexto = `${hora.toString().padStart(2, "0")}:00`;
+        const reservaExistente = reservas.find(
+            (reserva) => reserva.dia === dia && reserva.hora === horaTexto && reserva.clase === clases[claseIndex]
+        );
+        if (!reservaExistente) {
+            horarios.push(horaTexto);
+        }
+    }
+    return horarios;
+}
+
+function mostrarHorariosReservados() {
+    const horariosReservadosDiv = document.getElementById("horariosReservados");
+    horariosReservadosDiv.innerHTML = "<h2>Reserved Schedules</h2>";
+    if (reservas.length === 0) {
+        horariosReservadosDiv.innerHTML += "<p>No schedules reserved.</p>";
+    } else {
+        reservas.forEach((reserva) => {
+            const reservaItem = document.createElement("p");
+            reservaItem.textContent = `Class: ${reserva.clase}, Day: ${reserva.dia}, Time: ${reserva.hora}`;
+            horariosReservadosDiv.appendChild(reservaItem);
+        });
+    }
+}
+
+function generarOpcionesHorarios() {
+    const horaSelect = document.getElementById("hora");
+    horaSelect.innerHTML = "";
+    for (let hora = 9; hora <= 21; hora++) {
+        const option = document.createElement("option");
+        option.value = `${hora.toString().padStart(2, "0")}:00`;
+        option.textContent = `${hora.toString().padStart(2, "0")}:00`;
+        horaSelect.appendChild(option);
+    }
+}
+
 function seleccionarClase(index) {
-    console.log("Clase seleccionada: ", clases[index]);
     formularioReserva.style.display = "block";
-    claseSeleccionada.textContent = `Clase seleccionada: ${clases[index]}`;
-    formularioReserva.dataset.claseIndex = index; // Guardar el índice de la clase seleccionada
-    output.innerHTML = ""; // Limpiar el área de salida
+    claseSeleccionada.textContent = `Selected class: ${clases[index]}`;
+    formularioReserva.dataset.claseIndex = index;
+    output.innerHTML = "";
+    generarOpcionesHorarios();
+    const dia = document.getElementById("dia").value;
+    if (dia) {
+        const horariosDisponibles = mostrarHorariosDisponibles(dia, index);
+        if (horariosDisponibles.length > 0) {
+            output.innerHTML = `
+                <h2>Available Schedules</h2>
+                <p>${horariosDisponibles.join(", ")}</p>
+            `;
+        } else {
+            output.innerHTML = "<p style='color: red;'>No schedules available for this day.</p>";
+        }
+    }
+    mostrarHorariosReservados();
 }
 
-// Confirmar reserva
+document.getElementById("nombre").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+});
+
+document.getElementById("dia").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^0-9/]/g, "");
+});
+
 function confirmarReserva() {
     const nombre = document.getElementById("nombre").value;
     const dia = document.getElementById("dia").value;
     const hora = document.getElementById("hora").value;
     const claseIndex = formularioReserva.dataset.claseIndex;
-
+    const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (!fechaRegex.test(dia)) {
+        output.innerHTML = "<p style='color: red;'>Please enter a valid date in the format dd/mm/yyyy.</p>";
+        return;
+    }
+    const reservaExistente = reservas.find(
+        (reserva) => reserva.dia === dia && reserva.hora === hora
+    );
+    if (reservaExistente) {
+        output.innerHTML = `<p style='color: red;'>The time ${hora} is already reserved for the class ${reservaExistente.clase}. Please choose another time.</p>`;
+        return;
+    }
     if (nombre && dia && hora) {
-        contadorReservas++; // Incrementar el contador
+        contadorReservas++;
+        reservas.push({ clase: clases[claseIndex], dia, hora });
+        const detalles = [
+            `<strong>Reservation Number: ${contadorReservas}</strong>`,
+            `Class: ${clases[claseIndex]}`,
+            `Name: ${nombre}`,
+            `Day: ${dia}`,
+            `Time: ${hora}`,
+            "Message: Your reservation has been successfully received. We will confirm shortly.",
+            "ETA: 15 minutes before the class starts."
+        ].map((detalle) => `<p>${detalle}</p>`).join("");
         output.innerHTML = `
-            <h2>Reserva Recibida</h2>
-            <p>Clase: ${clases[claseIndex]}</p>
-            <p>Nombre: ${nombre}</p>
-            <p>Día: ${dia}</p>
-            <p>Hora: ${hora}</p>
-            <p>Mensaje: Su reserva ha sido recibida exitosamente le confirmaremos a la brevedad
-            .</p>
-            
-            <p>ETA: 15 minutos antes del inicio de la clase.</p>
+            <h2>Reservation Received</h2>
+            ${detalles}
         `;
         formularioReserva.style.display = "none";
-
-        // Mostrar agradecimiento y contador
-        const agradecimiento = document.createElement("p");
-        agradecimiento.textContent = `¡Gracias por reservar! Total de reservas recibidas: ${contadorReservas}`;
-        agradecimiento.style.color = "green";
-        agradecimiento.style.marginTop = "20px";
-        document.body.appendChild(agradecimiento);
-
-        console.log("Reserva recibida para: ", nombre);
+        let agradecimiento = document.getElementById("agradecimiento");
+        if (!agradecimiento) {
+            agradecimiento = document.createElement("div");
+            agradecimiento.id = "agradecimiento";
+            agradecimiento.style.backgroundColor = "#d4edda";
+            agradecimiento.style.color = "#155724";
+            agradecimiento.style.padding = "15px";
+            agradecimiento.style.marginTop = "20px";
+            agradecimiento.style.border = "1px solid #c3e6cb";
+            agradecimiento.style.borderRadius = "5px";
+            agradecimiento.style.textAlign = "center";
+            document.body.appendChild(agradecimiento);
+        }
+        agradecimiento.textContent = `Thank you for making your reservation! Total reservations: ${contadorReservas}`;
+        mostrarHorariosReservados();
     } else {
-        output.innerHTML = "<p style='color: red;'>Por favor, complete todos los campos.</p>";
-        console.log("Datos incompletos.");
+        output.innerHTML = "<p style='color: red;'>Please complete all fields.</p>";
     }
 }
 
-// Cancelar reserva
 function cancelarReserva() {
     formularioReserva.style.display = "none";
-    output.innerHTML = "<p>Reserva cancelada. Puede seleccionar otra clase.</p>";
-    console.log("Reserva cancelada.");
+    output.innerHTML = "<p>Reservation canceled. You can select another class.</p>";
 }
 
-// Función para iniciar el simulador
 function iniciarSimulador() {
-    console.log("Iniciando simulador...");
-
     document.getElementById("verClases").addEventListener("click", () => mostrarClases(clases));
     document.getElementById("salir").addEventListener("click", () => {
-        output.innerHTML = "<p>Gracias por usar el simulador.</p>";
-        console.log("Simulador finalizado.");
+        output.innerHTML = "<p>Thank you for using the simulator.</p>";
     });
     document.getElementById("confirmarReserva").addEventListener("click", confirmarReserva);
     document.getElementById("cancelarReserva").addEventListener("click", cancelarReserva);
 }
 
-// Iniciar simulador al cargar la página
 document.addEventListener("DOMContentLoaded", iniciarSimulador);

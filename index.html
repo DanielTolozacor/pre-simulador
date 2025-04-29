@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presimulador</title>
+    <title>Class Reservation Simulator</title>
     <link rel="stylesheet" href="./styles.css">
     <script src="./js/main.js" defer></script>
 </head>
 <body>
-    <h1>Bienvenido al Presimulador de Clases</h1>
+    <h1>Welcome to the Class Reservation Simulator</h1>
     <div id="menu">
-        <button id="verClases" class="menu-btn">Ver Clases Disponibles</button>
-        <button id="salir" class="menu-btn">Salir</button>
+        <button id="verClases" class="menu-btn">View Available Classes</button>
     </div>
-    <div id="output"></div>
+    <div id="main-container" style="display: flex; gap: 20px;">
+        <div id="output"></div>
+        <div id="horariosReservados" style="flex: 1; border: 1px solid #ffd700; padding: 10px; border-radius: 5px;">
+            <!-- Reserved schedules will be displayed here -->
+        </div>
+    </div>
     <div id="formularioReserva" style="display: none;">
-        <h2>Reservar Clase</h2>
+        <h2>Reserve a Class</h2>
         <p id="claseSeleccionada"></p>
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" placeholder="Ingrese su nombre" />
-        <label for="dia">Día (dd/mm/yyyy):</label>
-        <input type="text" id="dia" placeholder="Ingrese el día" />
-        <label for="hora">Hora (hh:mm):</label>
-        <input type="text" id="hora" placeholder="Ingrese la hora" />
-        <button id="confirmarReserva">Confirmar Reserva</button>
-        <button id="cancelarReserva">Cancelar</button>
+        <label for="nombre">Name:</label>
+        <input type="text" id="nombre" placeholder="Enter your name" />
+        <label for="dia">Day (dd/mm/yyyy):</label>
+        <input type="text" id="dia" placeholder="Enter the day" />
+        <label for="hora">Time (hh:mm):</label>
+        <select id="hora">
+            <!-- Time options will be dynamically generated -->
+        </select>
+        <button id="confirmarReserva">Confirm Reservation</button>
+        <button id="cancelarReserva">Cancel</button>
     </div>
+    <button id="salir" class="menu-btn" style="margin-top: 20px;">Exit</button>
 </body>
 </html>
