@@ -45,17 +45,24 @@ function mostrarClases(listaClases) {
 
 function mostrarHorariosDisponibles(dia, claseIndex) {
     const horarios = [];
+    console.log("Día seleccionado:", dia); // Verifica el día recibido
+    console.log("Clase seleccionada:", clases[claseIndex]); // Verifica la clase seleccionada
+
     for (let hora = 9; hora <= 21; hora++) {
         const horaTexto = `${hora.toString().padStart(2, "0")}:00`;
         const reservaExistente = reservas.find(
             (reserva) => reserva.dia === dia && reserva.hora === horaTexto && reserva.clase === clases[claseIndex]
         );
+
         if (!reservaExistente) {
             horarios.push(horaTexto);
         }
     }
+
+    console.log("Horarios disponibles para el día y clase:", horarios); // Verifica los horarios generados
     return horarios;
 }
+
 
 function mostrarHorariosReservados() {
     const horariosReservadosDiv = document.getElementById("horariosReservados");
@@ -103,12 +110,25 @@ function seleccionarClase(index) {
     mostrarHorariosReservados();
 }
 
+<<<<<<< HEAD
+=======
+document.getElementById("nombre").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+});
+
+document.getElementById("dia").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^0-9/]/g, "");
+>>>>>>> b8d075453dc5d9970263c1e4a0ee49ff46bcdfb1
 function confirmarReserva() {
     const nombre = document.getElementById("nombre").value;
     const dia = document.getElementById("dia").value;
     const hora = document.getElementById("hora").value;
     const telefono = document.getElementById("telefono").value;
     const claseIndex = formularioReserva.dataset.claseIndex;
+
+    console.log("Datos de confirmación de reserva:", { nombre, dia, hora, telefono, clase: clases[claseIndex] });
 
     if (!telefono || telefono.length < 10) {
         output.innerHTML = "<p style='color: red;'>Please enter a valid phone number with at least 10 digits.</p>";
@@ -139,24 +159,14 @@ function confirmarReserva() {
     }
 
     if (nombre && dia && hora && telefono) {
+        console.log("Reserva confirmada, añadiendo a la lista de reservas.");
         contadorReservas++;
         reservas.push({ clase: clases[claseIndex], dia, hora, telefono });
-        const detalles = [
-            `<strong>Reservation Number: ${contadorReservas}</strong>`,
-            `Class: ${clases[claseIndex]}`,
-            `Name: ${nombre}`,
-            `Day: ${dia}`,
-            `Time: ${hora}`,
-            `Phone: ${telefono}`,
-            "Message: Your reservation has been successfully received. We will confirm shortly.",
-            "ETA: 15 minutes before the class starts."
-        ].map((detalle) => `<p>${detalle}</p>`).join("");
-        output.innerHTML = `
-            <h2>Reservation Received</h2>
-            ${detalles}
-        `;
-        formularioReserva.style.display = "none";
-        let agradecimiento = document.getElementById("agradecimiento");
+        mostrarHorariosReservados();
+    } else {
+        output.innerHTML = "<p style='color: red;'>Please complete all fields.</p>";
+    }
+}
         if (!agradecimiento) {
             agradecimiento = document.createElement("div");
             agradecimiento.id = "agradecimiento";
