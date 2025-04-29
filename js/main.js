@@ -21,14 +21,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("dia").addEventListener("input", (event) => {
         const input = event.target;
-        input.value = input.value.replace(/[^0-9/]/g, ""); // Allow only numbers and "/"
-        generarOpcionesHorarios(); // Update the "hora" dropdown when the day is entered
+        input.value = input.value.replace(/[^0-9/]/g, "");
+        generarOpcionesHorarios();
     });
 
     document.getElementById("telefono").addEventListener("input", (event) => {
         const input = event.target;
         input.value = input.value.replace(/[^0-9]/g, "");
     });
+
+    const img = document.createElement("img");
+    img.src = "./assets/imagenes/imagen1.jpeg";
+    img.alt = "Class Reservation";
+    img.style.position = "absolute";
+    img.style.top = "0";
+    img.style.left = "0";
+    img.style.width = "100%";
+    img.style.height = "calc(100vh - 50px)"; // Adjust height to exclude footer height
+    img.style.zIndex = "-1";
+    img.style.objectFit = "cover";
+    document.body.appendChild(img);
+
+    // Load reservations from localStorage
+    const savedReservas = localStorage.getItem("reservas");
+    if (savedReservas) {
+        reservas = JSON.parse(savedReservas); // Parse and load saved reservations
+        mostrarHorariosReservados(); // Update the UI with saved reservations
+    }
 });
 
 function mostrarClases(listaClases) {
@@ -60,7 +79,7 @@ function generarOpcionesHorarios() {
     const horaSelect = document.getElementById("hora");
     const dia = document.getElementById("dia").value.trim();
 
-    horaSelect.innerHTML = ""; // Clear previous options
+    horaSelect.innerHTML = "";
 
     if (!dia) {
         horaSelect.innerHTML = "<option value=''>Select a day first</option>";
@@ -87,7 +106,7 @@ function seleccionarClase(index) {
     claseSeleccionada.textContent = `Selected class: ${clases[index]}`;
     formularioReserva.dataset.claseIndex = index;
     output.innerHTML = "";
-    generarOpcionesHorarios(); // Populate the "hora" dropdown with available schedules
+    generarOpcionesHorarios();
 }
 
 function confirmarReserva() {
@@ -110,8 +129,11 @@ function confirmarReserva() {
         return;
     }
 
-    contadorReservas++; // Increment the reservation counter
-    reservas.push({ clase: clases[claseIndex], dia, hora, telefono }); // Add reservation to the list
+    contadorReservas++;
+    reservas.push({ clase: clases[claseIndex], dia, hora, telefono });
+
+    // Save updated reservations to localStorage
+    localStorage.setItem("reservas", JSON.stringify(reservas));
 
     output.innerHTML = `
         <h2>Reservation Confirmed</h2>
@@ -124,7 +146,7 @@ function confirmarReserva() {
     `;
     formularioReserva.style.display = "none";
     mostrarHorariosReservados();
-    mostrarMensajeFooter(); // Display footer message
+    mostrarMensajeFooter();
 }
 
 function mostrarMensajeFooter() {
@@ -142,7 +164,7 @@ function mostrarMensajeFooter() {
     }
     footerMessage.innerHTML = `
         <p>Thank you for reserving with us!</p>
-        <p>Segunda pre entrega</p>
+    
     `;
 }
 

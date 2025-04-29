@@ -2,16 +2,23 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 50px 0 0 0; /* Add 50px padding at the top */
     background-color: #000; /* Black base */
     color: #fff; /* White text for contrast */
     text-align: center;
+display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the body takes the full height of the viewport */
 }
 
 /* Header styles */
 h1, h2 {
     color: #ffd700; /* Gold color */
     text-shadow: 0 0 10px #ffd700, 0 0 20px #ffcc00; /* Glowing gold effect */
+}
+
+h1 {
+    margin-bottom: 100px; /* Add 100px space after the header */
 }
 
 /* Buttons */
@@ -46,7 +53,7 @@ button:hover {
 
 /* Formulario de reserva */
 #formularioReserva {
-    margin: 20px auto;
+    margin: 150px auto; /* Separate the form by 150px from other elements */
     padding: 20px;
     max-width: 600px;
     background: linear-gradient(45deg, #333, #000); /* Black gradient */
@@ -103,16 +110,16 @@ button:hover {
 
 /* Footer */
 footer {
+margin-top: auto; /* Push the footer to the bottom */
     text-align: center;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #000; /* Black base */
-    color: #ffd700; /* Gold text */
+        padding: 10px;
+    background-color: #000;
+    color: #ffd700;
     border-top: 2px solid #ffd700;
 }
 
 /* Menu buttons */
-.menu-btn {
+menu-btn {
     background: linear-gradient(45deg, #ffcc00, #ffd700, #ffcc00); /* Gold gradient */
     color: #000; /* Black text */
     border: 2px solid #ffd700;
@@ -125,6 +132,26 @@ footer {
 }
 
 .menu-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #ffd700, 0 0 30px #ffcc00;
+}
+
+#salir {
+    display: block; /* Make the button a block element to center it */
+    margin: 20px auto; /* Center horizontally and add vertical spacing */
+    width: 150px; /* Set the width to 150px */
+    background: linear-gradient(45deg, #ffcc00, #ffd700, #ffcc00); /* Gold gradient */
+    color: #000; /* Black text for contrast */
+    border: 2px solid #ffd700;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#salir:hover {
     transform: scale(1.1);
     box-shadow: 0 0 15px #ffd700, 0 0 30px #ffcc00;
 }
