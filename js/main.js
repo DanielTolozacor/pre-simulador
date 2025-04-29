@@ -106,19 +106,26 @@ function confirmarReserva() {
     }
 
     const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-    if (!fechaRegex.test(dia)) {
-        output.innerHTML = "<p style='color: red;'>Please enter a valid date in the format dd/mm/yyyy.</p>";
-        return;
-    }
+console.log("Fecha ingresada:", dia); // Verifica qué fecha se ingresó
+console.log("¿Formato válido?", fechaRegex.test(dia)); // Verifica si cumple con el formato
 
-    const [day, month, year] = dia.split("/").map(Number);
-    const inputDate = new Date(year, month - 1, day);
-    const minDate = new Date(2025, 3, 29); // 29/04/2025
+if (!fechaRegex.test(dia)) {
+    output.innerHTML = "<p style='color: red;'>Please enter a valid date in the format dd/mm/yyyy.</p>";
+    return;
+}
 
-    if (inputDate < minDate) {
-        output.innerHTML = "<p style='color: red;'>The date must be on or after 29/04/2025.</p>";
-        return;
-    }
+const [day, month, year] = dia.split("/").map(Number);
+const inputDate = new Date(year, month - 1, day);
+const minDate = new Date(2025, 3, 29); // 29/04/2025
+
+console.log("Fecha mínima permitida:", minDate); // Verifica la fecha mínima
+console.log("Fecha ingresada convertida:", inputDate); // Verifica la fecha ingresada convertida
+console.log("¿Fecha válida?", inputDate >= minDate); // Verifica si la fecha es válida
+
+if (inputDate < minDate) {
+    output.innerHTML = "<p style='color: red;'>The date must be on or after 29/04/2025.</p>";
+    return;
+}
 
     const reservaExistente = reservas.find(
         (reserva) => reserva.dia === dia && reserva.hora === hora
