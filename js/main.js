@@ -1,64 +1,67 @@
 const clases = ["Tango", "Milonga", "Vals"];
 
-let output, formularioReserva, claseSeleccionada, contadorReservas = 0, reservas = [];
+let output = document.getElementById("output"),
+    formularioReserva = document.getElementById("formularioReserva"),
+    claseSeleccionada = document.getElementById("claseSeleccionada"),
+    contadorReservas = 0,
+    reservas = JSON.parse(localStorage.getItem("reservas")) || [];
 
-document.addEventListener("DOMContentLoaded", () => {
-    output = document.getElementById("output");
-    formularioReserva = document.getElementById("formularioReserva");
-    claseSeleccionada = document.getElementById("claseSeleccionada");
+// Set minimum date for the date picker to today
+const diaInput = document.getElementById("dia");
+const today = new Date().toISOString().split("T")[0];
+diaInput.setAttribute("min", today);
 
-    document.getElementById("verClases").addEventListener("click", () => mostrarClases(clases));
-    document.getElementById("salir").addEventListener("click", () => {
-        output.innerHTML = "<p>Thank you for using the simulator.</p>";
-    });
-    document.getElementById("confirmarReserva").addEventListener("click", confirmarReserva);
-    document.getElementById("cancelarReserva").addEventListener("click", cancelarReserva);
-
-    document.getElementById("nombre").addEventListener("input", (event) => {
-        const input = event.target;
-        input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-    });
-
-    document.getElementById("dia").addEventListener("input", (event) => {
-        const input = event.target;
-        input.value = input.value.replace(/[^0-9/]/g, "");
-        generarOpcionesHorarios();
-    });
-
-    document.getElementById("telefono").addEventListener("input", (event) => {
-        const input = event.target;
-        input.value = input.value.replace(/[^0-9]/g, "");
-    });
-
-    const img = document.createElement("img");
-    img.src = "./assets/imagenes/imagen1.jpeg";
-    img.alt = "Class Reservation";
-    img.style.position = "absolute";
-    img.style.top = "0";
-    img.style.left = "0";
-    img.style.width = "100%";
-    img.style.height = "calc(100vh - 50px)"; // Adjust height to exclude footer height
-    img.style.zIndex = "-1";
-    img.style.objectFit = "cover";
-    document.body.appendChild(img);
-
-    // Load reservations from localStorage
-    const savedReservas = localStorage.getItem("reservas");
-    if (savedReservas) {
-        reservas = JSON.parse(savedReservas); // Parse and load saved reservations
-        mostrarHorariosReservados(); // Update the UI with saved reservations
-    }
+// Event Listeners
+document.getElementById("verClases").addEventListener("click", () => mostrarClases(clases));
+document.getElementById("salir").addEventListener("click", () => {
+    output.innerHTML = "<p>Thank you for using the simulator.</p>";
+});
+document.getElementById("confirmarReserva").addEventListener("click", confirmarReserva);
+document.getElementById("cancelarReserva").addEventListener("click", cancelarReserva);
+document.getElementById("nombre").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+});
+document.getElementById("dia").addEventListener("change", generarOpcionesHorarios); // Fixed event listener for day selection
+document.getElementById("telefono").addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/[^0-9]/g, "");
 });
 
+// Background Image
+const img = `
+    <img 
+        src="./assets/imagenes/imagen1.jpeg" 
+        alt="Class Reservation" 
+        style="
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: calc(100vh - 50px); 
+            z-index: -1; 
+            object-fit: cover;
+        "
+    />
+`;
+document.body.insertAdjacentHTML("afterbegin", img);
+
+// Initialize
+if (reservas.length) mostrarHorariosReservados();
+
 function mostrarClases(listaClases) {
-    output.innerHTML = "<h2>Available Classes</h2>";
-    listaClases.forEach((clase, index) => {
-        const claseItem = document.createElement("button");
-        claseItem.textContent = `${index + 1}. ${clase}`;
-        claseItem.classList.add("clase-item");
-        claseItem.addEventListener("click", () => seleccionarClase(index));
-        output.appendChild(claseItem);
-    });
+    output.innerHTML = `
+        <h2>Available Classes</h2>
+        ${listaClases
+            .map(
+                (clase, index) => `
+                <button class="clase-item" onclick="seleccionarClase(${index})">
+                    ${index + 1}. ${clase}
+                </button>
+            `
+            )
+            .join("")}
+    `;
 }
 
 function mostrarHorariosDisponibles(dia) {
@@ -77,9 +80,7 @@ function mostrarHorariosDisponibles(dia) {
 
 function generarOpcionesHorarios() {
     const horaSelect = document.getElementById("hora");
-    const dia = document.getElementById("dia").value.trim();
-
-    horaSelect.innerHTML = "";
+    const dia = diaInput.value.trim();
 
     if (!dia) {
         horaSelect.innerHTML = "<option value=''>Select a day first</option>";
@@ -88,17 +89,11 @@ function generarOpcionesHorarios() {
 
     const horariosDisponibles = mostrarHorariosDisponibles(dia);
 
-    if (horariosDisponibles.length === 0) {
-        horaSelect.innerHTML = "<option value=''>No available schedules</option>";
-        return;
-    }
-
-    horariosDisponibles.forEach((hora) => {
-        const option = document.createElement("option");
-        option.value = hora;
-        option.textContent = hora;
-        horaSelect.appendChild(option);
-    });
+    horaSelect.innerHTML = horariosDisponibles.length
+        ? horariosDisponibles
+              .map((hora) => `<option value="${hora}">${hora}</option>`)
+              .join("")
+        : "<option value=''>No available schedules</option>";
 }
 
 function seleccionarClase(index) {
@@ -110,10 +105,10 @@ function seleccionarClase(index) {
 }
 
 function confirmarReserva() {
-    const nombre = document.getElementById("nombre").value;
-    const dia = document.getElementById("dia").value;
+    const nombre = document.getElementById("nombre").value.trim();
+    const dia = diaInput.value.trim();
     const hora = document.getElementById("hora").value;
-    const telefono = document.getElementById("telefono").value;
+    const telefono = document.getElementById("telefono").value.trim();
     const claseIndex = formularioReserva.dataset.claseIndex;
 
     if (!nombre || !dia || !hora || !telefono) {
@@ -146,26 +141,6 @@ function confirmarReserva() {
     `;
     formularioReserva.style.display = "none";
     mostrarHorariosReservados();
-    mostrarMensajeFooter();
-}
-
-function mostrarMensajeFooter() {
-    let footerMessage = document.getElementById("footerMessage");
-    if (!footerMessage) {
-        footerMessage = document.createElement("div");
-        footerMessage.id = "footerMessage";
-        footerMessage.style.textAlign = "center";
-        footerMessage.style.marginTop = "20px";
-        footerMessage.style.padding = "10px";
-        footerMessage.style.backgroundColor = "#000";
-        footerMessage.style.color = "#ffd700";
-        footerMessage.style.borderTop = "2px solid #ffd700";
-        document.body.appendChild(footerMessage);
-    }
-    footerMessage.innerHTML = `
-        <p>Thank you for reserving with us!</p>
-    
-    `;
 }
 
 function mostrarHorariosReservados() {
@@ -175,15 +150,58 @@ function mostrarHorariosReservados() {
     if (reservas.length === 0) {
         horariosReservadosDiv.innerHTML += "<p>No schedules reserved.</p>";
     } else {
-        reservas.forEach((reserva) => {
-            const reservaItem = document.createElement("p");
-            reservaItem.textContent = `Class: ${reserva.clase}, Day: ${reserva.dia}, Time: ${reserva.hora}`;
-            horariosReservadosDiv.appendChild(reservaItem);
-        });
+        horariosReservadosDiv.innerHTML += reservas
+            .map(
+                (reserva, index) => `
+                <div style="margin-bottom: 10px;">
+                    <p>
+                        Class: ${reserva.clase}, Day: ${reserva.dia}, Time: ${reserva.hora}, Phone: ${reserva.telefono}
+                    </p>
+                    <button onclick="editarReserva(${index})">Edit</button>
+                    <button onclick="borrarReserva(${index})">Delete</button>
+                </div>
+            `
+            )
+            .join("");
+    }
+}
+
+function editarReserva(index) {
+    const reserva = reservas[index];
+    const newName = prompt("Enter new name:", reserva.nombre || "");
+    const newDay = prompt("Enter new day (yyyy-mm-dd):", reserva.dia || "");
+    const newTime = prompt("Enter new time (hh:mm):", reserva.hora || "");
+    const newPhone = prompt("Enter new phone number:", reserva.telefono || "");
+
+    if (newName && newDay && newTime && newPhone) {
+        reservas[index] = { clase: reserva.clase, dia: newDay, hora: newTime, telefono: newPhone };
+        localStorage.setItem("reservas", JSON.stringify(reservas));
+        mostrarHorariosReservados();
+        output.innerHTML = "<p style='color: green;'>Reservation updated successfully.</p>";
+    } else {
+        alert("All fields are required. Action canceled.");
+    }
+}
+
+function borrarReserva(index) {
+    if (confirm("Are you sure you want to delete this reservation?")) {
+        reservas.splice(index, 1);
+        localStorage.setItem("reservas", JSON.stringify(reservas));
+        mostrarHorariosReservados();
+        output.innerHTML = "<p style='color: red;'>Reservation deleted.</p>";
     }
 }
 
 function cancelarReserva() {
     formularioReserva.style.display = "none";
     output.innerHTML = "<p>Reservation canceled. You can select another class.</p>";
+}
+
+function vaciarReservas() {
+    if (confirm("Are you sure you want to delete all reservations?")) {
+        reservas = [];
+        localStorage.removeItem("reservas");
+        mostrarHorariosReservados();
+        output.innerHTML = "<p style='color: red;'>All reservations have been deleted.</p>";
+    }
 }
